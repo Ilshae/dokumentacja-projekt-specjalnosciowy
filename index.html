@@ -275,6 +275,25 @@
                             cart-icon.test</a
                           >
                         </li>
+                        <a class="nav-link nav-sublink" href="#idocs_cart_dropdown"
+                        >cart-dropdown</a
+                      >
+                      <ul class="nav flex-column">
+                        <li class="nav-item dropdown-item">
+                          <a class="nav-link" href="#idocs_cart_dropdown_component">
+                            cart-dropdown.component</a
+                          >
+                        </li>
+                        <li class="nav-item dropdown-item">
+                          <a class="nav-link" href="#idocs_cart_dropdown_styles">
+                            cart-dropdown.styles</a
+                          >
+                        </li>
+                        <li class="nav-item dropdown-item">
+                          <a class="nav-link" href="#idocs_cart_dropdown_test">
+                            cart-dropdown.test</a
+                          >
+                        </li>
                       </ul>
                     </li>
                   </ul>
@@ -586,7 +605,7 @@
                 /></a>
               </p>
               <pre><code class="language-javascript">
-import React from 'react'; // potrzebne do interpretacji JSX na JS 
+import React from 'react'; // potrzebne do interpretacji JSX na JS
 import { connect } from 'react-redux'; // funkcje do obsługi Redux (omówione w oddzielnym dziale)
 import { createStructuredSelector } from 'reselect'; // funkcje do obsługi Redux (omówione w oddzielnym dziale)
 
@@ -634,14 +653,12 @@ export const Header = (
   &lt;/HeaderContainer&gt;
 );
 
-const mapStateToProps = createStructuredSelector({
-  // przekazuje ze store do props informacje o aktualnym użytkowniku, i czy koszyk jest 'otwarty'
+const mapStateToProps = createStructuredSelector({  // przekazuje ze store do props informacje o aktualnym użytkowniku, i czy koszyk jest 'otwarty'
   currentUser: selectCurrentUser,
   hidden: selectCartHidden,
 });
 
-const mapDispatchToProps = (dispatch) =&gt; ({
-  // jeżeli użytkownik kliknie Sign Out, przekazuje do store informację, że użytkownik się wylogował
+const mapDispatchToProps = (dispatch) =&gt; ({  // jeżeli użytkownik kliknie Sign Out, przekazuje do store informację, że użytkownik się wylogował
   signOutStart: () =&gt; dispatch(signOutStart()),
 });
 
@@ -744,7 +761,7 @@ export const OptionLink = styled(Link)` // tworzy komponent OptionLink, który r
   cursor: pointer;
 `;
 
-OptionLink.displayName = 'OptionLink';  // po zrenderowaniu w DevTools komponent OptionLink wyświetlał by sięjako styled.link, ale po zmianie parametru displayName wyświetli się jako OptionLink co ułatwi debugowanie                             
+OptionLink.displayName = 'OptionLink';  // po zrenderowaniu w DevTools komponent OptionLink wyświetlał by się jako styled.link, ale po zmianie parametru displayName wyświetli się jako OptionLink co ułatwi debugowanie
               </code></pre>
 
               <h4 class="mt-5" id="idocs_header_test">header.test.js</h4>
@@ -780,7 +797,7 @@ describe('Header component', () =&gt; {  // describe pozwala na tworzenie zestaw
       signOutStart: mockSignOutStart
     };
 
-    wrapper = shallow(&lt;Header {...mockProps} /&gt;);  // "zrenderuj" komponent Header z propsami wyżej
+    wrapper = shallow(&lt;Header {...mockProps} /&gt;);  // wyrenderuj komponent Header z propsami wyżej
   });
 
   it('should render Header component', () =&gt; {  // tworzy indywidualny test, który powinine wyrenderować komponent Header
@@ -875,14 +892,42 @@ describe('Header component', () =&gt; {  // describe pozwala na tworzenie zestaw
                 /></a>
               </p>
               <pre><code class="language-javascript">
-    
+import React from 'react';  // potrzebne do interpretacji JSX na JS
+import { connect } from 'react-redux';  // funkcje do obsługi Redux (omówione w oddzielnym dziale)
+import { createStructuredSelector } from 'reselect';  // funkcje do obsługi Redux (omówione w oddzielnym dziale)
+
+import { toggleCartHidden } from '../../redux/cart/cart.actions';  // funkcje do obsługi Redux (omówione w oddzielnym dziale)
+import { selectCartItemsCount } from '../../redux/cart/cart.selectors';  // funkcje do obsługi Redux (omówione w oddzielnym dziale)
+
+import {
+  CartContainer,
+  ShoppingIcon,
+  ItemCountContainer,
+} from './cart-icon.styles';  // import styli StyledComponents (alternatywa SCSS)
+
+export const CartIcon = ({ toggleCartHidden, itemCount }) =&gt; (  // deklaracja, przekazanie propsów
+  &lt;CartContainer onClick={toggleCartHidden}&gt;  // po kliknięciu na CartContainer zostanie wywołana funkcja toggleCartHidden, która została przekazana do tego komponentu za pomocą props
+    &lt;ShoppingIcon /&gt;
+    &lt;ItemCountContainer&gt;{itemCount}&lt;/ItemCountContainer&gt;  // ikona koszyka wyświetla liczbę odzwierciedlającą ilość produktów w koszyku, zmienna itemCount, została przekazana do tego komponentu za pomocą props
+  &lt;/CartContainer&gt;
+);
+
+const mapDispatchToProps = (dispatch) =&gt; ({  // jeżeli użytkownik kliknie na ikonę koszyka, zmienna hidden w store zmieni się na przeciwną zmienną (albo true albo false)
+  toggleCartHidden: () =&gt; dispatch(toggleCartHidden()),
+});
+
+const mapStateToProps = createStructuredSelector({  // przekazuje ze store do props informacje o tym ile produktów znajduje się w koszyku
+  itemCount: selectCartItemsCount,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(CartIcon);  // łączy komponent React ze store Redux.        
       </code></pre>
               <p class="alert alert-info scroll-link">
                 <a href="#idocs_props">Czym są props?</a>
               </p>
 
               <h4 class="mt-5" id="idocs_cart_icon_styles">
-                cart_icon.styles.jsx
+                cart-icon.styles.jsx
               </h4>
               <p>
                 <strong
@@ -898,9 +943,37 @@ describe('Header component', () =&gt; {  // describe pozwala na tworzenie zestaw
                 <a href="#idocs_styled_components">Co to styled-components?</a>
               </p>
               <pre><code class="language-javascript">
+import styled from 'styled-components';  // import biblioteki styled components
+import { ReactComponent as ShoppingIconSVG } from '../../assets/shopping-bag.svg';  // import grafiki shopping-bar (czyli ikony koszyka)
+
+export const CartContainer = styled.header`  // tworzy komponent CartContainer, który renderuje tag html header z określonymi stylami
+  width: 45px;
+  height: 45px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`;
+
+CartContainer.displayName = 'CartContainer';  // po zrenderowaniu w DevTools komponent CartContainer wyświetlał by się jako styled.header, ale po zmianie parametru displayName wyświetli się jako CartContainer co ułatwi debugowanie
+
+export const ShoppingIcon = styled(ShoppingIconSVG)`  // tworzy komponent ShoppingIcon, który renderuje plik shopping-bar.svg jako grafikę svg z określonymi stylami
+  width: 24px;
+  height: 24px;
+`;
+
+export const ItemCountContainer = styled.span`  // tworzy komponent ItemCountContainer, który renderuje tag html span z określonymi stylami
+  position: absolute;
+  font-size: 10px;
+  font-weight: bold;
+  bottom: 12px;
+`;
+
+ItemCountContainer.displayName = 'ItemCountContainer';  // po zrenderowaniu w DevTools komponent ItemCountContainer wyświetlał by się jako styled.header, ale po zmianie parametru displayName wyświetli się jako ItemCountContainer co ułatwi debugowanie
       </code></pre>
 
-              <h4 class="mt-5" id="idocs_cart_icon_test">cart_icon.test.js</h4>
+              <h4 class="mt-5" id="idocs_cart_icon_test">cart-icon.test.js</h4>
               <p>
                 <strong
                   >Pliki {component}.test.js zawierają testy napisane w
@@ -912,7 +985,113 @@ describe('Header component', () =&gt; {  // describe pozwala na tworzenie zestaw
                 <a href="#idocs_jest">Co to Jest?</a>
               </p>
               <pre><code class="language-javascript">
+import React from 'react';  // będziemy testować komponenty Reacta, więc trzeba go zaimportować
+import { shallow } from 'enzyme';  // import funkcji do tzw shallow rendering, pozwala renderować komponent i sprawdzić co zwraca jego metoda render
+
+import { CartIcon } from './cart-icon.component';  // import komponentu, który będziemy testować
+
+describe('CartIcon component', () => {  // describe pozwala na tworzenie zestawów testów, te będą dotyczyć komponentu CartIcon
+  let wrapper;  // tworzenie zmiennych do testów
+  let mockToggleCartHidden;  // tworzenie zmiennych do testów
+
+  beforeEach(() => {  // beforeEach jest wywoływany przed każdym indywidualnym testem
+    mockToggleCartHidden = jest.fn();  // jest.fn() to mock funkcji, umożliwia testowanie powiązań między kodem poprzez wymazanie rzeczywistej implementacji funkcji, przechwytywanie wywołań funkcji (i parametrów przekazywanych w tych wywołaniach), przechwytywanie wystąpień funkcji konstruktora po utworzeniu instancji z nowym i umożliwienie konfiguracji w czasie testu zwracanych wartości.
+
+    const mockProps = {  // mockowanie propsów przekazanych do CartIcon
+      itemCount: 0,
+      toggleCartHidden: mockToggleCartHidden,
+    };
+
+    wrapper = shallow(<CartIcon {...mockProps} />);  // wyrenderuj komponent CartIcon z propsami wyżej
+  });
+
+  it('should render CartIcon component', () => {  // tworzy indywidualny test, który powinine wyrenderować komponent CartIcon
+    expect(wrapper).toMatchSnapshot();  // sprawdź czy wyrenderowany CartIcon jest zgodny z snapshotem
+  });
+
+  it('should call toggleCartHidden when icon is clicked', () => {  // jeżeli ikona koszyka zostanie kliknięta wartość zmiennej hidden powinna zmienić się na przeciwną (albo true albo false)
+    wrapper.find('CartContainer').simulate('click');  // symuluj kliknięcie na koszyk
+    expect(mockToggleCartHidden).toHaveBeenCalled();  // jeżeli koszyk został kliknięty funkcja mockToggleCartHidden powinna zostać wywołana
+  });
+
+  it('should render the itemCount as the text', () => {  // zmienna itemCount powinna wyrenderować się jako string
+    const itemCount = parseInt(wrapper.find('ItemCountContainer').text());  // znajdz komponent o nazwie ItemCountContainer, i przekonwertuj string na int
+    expect(itemCount).toBe(0);  // przekowertowany int powinien równać się 0 (brak przedmiotów w koszyku)
+  });
+});
       </code></pre>
+              <p class="alert alert-info scroll-link">
+                <a href="#idocs_mock">Czym jest mockowanie?</a>
+              </p>
+              <p class="alert alert-info scroll-link">
+                <a href="#idocs_snapshot_testing"
+                  >Do czego służy snapshot testing?</a
+                >
+              </p>
+            </section>
+
+            <hr class="divider" />
+
+            <!-- cart-icon
+		============================ -->
+            <section id="idocs_cart_dropdown">
+              <h2>cart-dropdown</h2>
+              <h4 id="idocs_cart_dropdown_component">
+                cart-dropdown.component.jsx
+              </h4>
+              <p>Ten komponent rozwija siępo kliknięciu na ikonę koszyka. Zawiera produkty użytkownika, ich ilość i cenę.<br />
+                Z tego miejsca jest dostępny przycisk CHECKOUT, który przekierowuje do: https://zadanie-na-uczelnie.pl/checkout,<br />
+                gdzie można obejrzeć produkty w koszyku i za nie zapłacić.</p>
+              <p>
+                <a class="popup-img" href="assets/images/cart-dropdown.png"
+                  ><img
+                    class="img-fluid border"
+                    src="assets/images/cart-dropdown.png"
+                    alt=""
+                /></a>
+              </p>
+              <pre><code class="language-javascript">
+        
+              </code></pre>
+              <p class="alert alert-info scroll-link">
+                <a href="#idocs_props">Czym są props?</a>
+              </p>
+
+              <h4 class="mt-5" id="idocs_cart_dropdown_styles">
+                cart-dropdown.styles.jsx
+              </h4>
+              <p>
+                <strong
+                  >Pliki {component}.styles.jsx są odpowiedzialne za wygląd
+                  komponentu.</strong
+                >
+                Stworzone za pomocą biblioteki Styled-components.
+                <br />
+                Wykorzystują mieszankę Javascript i CSS przy użyciu techniki
+                zwanej CSS-in-JS.
+              </p>
+              <p class="alert alert-info scroll-link">
+                <a href="#idocs_styled_components">Co to styled-components?</a>
+              </p>
+              <pre><code class="language-javascript">
+              </code></pre>
+
+              <h4 class="mt-5" id="idocs_cart_dropdown_test">
+                cart-dropdown.test.js
+              </h4>
+              <p>
+                <strong
+                  >Pliki {component}.test.js zawierają testy napisane w
+                  frameworku Jest.</strong
+                >
+                Testy mają na celu sprawdzenie czy strona działa bez błędow.
+              </p>
+              <p class="alert alert-info scroll-link">
+                <a href="#idocs_jest">Co to Jest?</a>
+              </p>
+              <pre><code class="language-javascript">
+
+              </code></pre>
               <p class="alert alert-info scroll-link">
                 <a href="#idocs_mock">Czym jest mockowanie?</a>
               </p>
