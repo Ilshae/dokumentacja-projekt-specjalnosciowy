@@ -1,19 +1,20 @@
-.navbar,
 .idocs-navigation,
-.idocs-content {
-  background-color: rgb(32, 32, 32) !important;
+.idocs-content,
+.nav,
+.primary-menu {
+  background-color: black !important;
   color: white !important;
 }
-
-.navbar a,
 .idocs-navigation a,
 .idocs-content a,
-.idocs-content h1,
-.idocs-content h2,
-.idocs-content h3,
-.idocs-content h4,
-.idocs-content h5,
-.idocs-content h6 {
+.nav a,
+.primary-menu a,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: white !important;
 }
 
